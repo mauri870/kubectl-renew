@@ -3,7 +3,7 @@
 set -e
 
 function usage() {
-	>&2 echo "kubectl renew pod|deployment NAME"
+	>&2 echo "kubectl renew pod|deployment|daemonset|rc NAME"
 	exit 1
 }
 
@@ -25,11 +25,10 @@ function renew_pod() {
 case $KIND in
 	pod)
 		renew_pod "$NAME" ;;
-	deployment)
-		selfLink=$(kubectl get deployment.apps "$NAME" -n "$NS" -o jsonpath={.metadata.selfLink})
-		selector=$(kubectl get --raw "${selfLink}/scale" | jq -r .status.selector)
-		PODS=$(kubectl get pods --no-headers -n "$NS" -l "$selector" | cut -d' ' -f1)
-		for pod in $PODS; do
+	deployment|daemonset|rc)
+		selector=$(kubectl get $KIND $NAME --output=json | jq -j '.spec.selector.matchLabels | to_entries | .[] | "\(.key)=\(.value),"')
+		pods=$(kubectl get pods --selector="${selector%?}" --output=jsonpath={.items..metadata.name})
+		for pod in $pods; do
 			renew_pod "$pod"
 		done ;;
 	*)
