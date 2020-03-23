@@ -18,6 +18,5 @@ By default it will be installed at `/usr/local/bin`, you can customize the insta
 ## Usage
 
 ```sh
-kubectl renew pod NAME
-kubectl renew deployment|daemonset|rc NAME
+kubectl renew pod|deployment|daemonset|rc NAME
 ```
