@@ -27,7 +27,11 @@ case $KIND in
 		renew_pod "$NAME" ;;
 	deployment|daemonset|rc)
 		selector=$(kubectl get "$KIND" "$NAME" -n "$NS" --output=json | jq -j '.spec.selector.matchLabels | to_entries | .[] | "\(.key)=\(.value),"')
+		if [ -z "$selector"]; then
+			exit 1;
+		fi
 		pods=$(kubectl get pods -n "$NS" --selector="${selector%?}" --output=jsonpath={.items..metadata.name})
+
 		for pod in $pods; do
 			renew_pod "$pod"
 		done ;;
