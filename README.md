@@ -1,6 +1,6 @@
 # kubectl renew
 
-> NOTE: just use `kubectl rollout restart` instead.
+> NOTE: for kubectl > 1.15 just use `kubectl rollout restart` instead.
 
 This is a simple kubectl plugin to renew(restart, start fresh) a single pod or all pods in a given deployment/daemonset/rc.
 
